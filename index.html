@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueberry Price Trends</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #7f53ac, #647dee);
+            color: white;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+            font-size: 2.5em;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            color: black;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 2px solid #ddd;
+        }
+        th {
+            background: #ff6f61;
+            color: white;
+        }
+        a {
+            color: #ffeb3b;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 30px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🥶 Blueberry Price Trends (Northeast USA) 🫐</h1>
+    <div class="container">
+        <p>Want the best deals on blueberries? Check out the seasonal price trends below! 🍇</p>
+        
+        <table>
+            <tr>
+                <th>Season</th>
+                <th>Average Price per Pound</th>
+            </tr>
+            <tr>
+                <td>June - August (Peak Season) 🌞</td>
+                <td>$2.00 - $2.50 ✅</td>
+            </tr>
+            <tr>
+                <td>September - November 🍂</td>
+                <td>$3.00 - $3.50 ⚠️</td>
+            </tr>
+            <tr>
+                <td>December - May (Imports) ❄️</td>
+                <td>$4.00 - $5.50 🚨</td>
+            </tr>
+        </table>
+        
+        <div class="chart-container">
+            <canvas id="priceChart"></canvas>
+        </div>
+        
+        <h2>📍 Live Grocery Prices</h2>
+        <table id="livePrices">
+            <tr>
+                <th>Store</th>
+                <th>Price per Pound</th>
+            </tr>
+            <tr>
+                <td>Stop & Shop</td>
+                <td id="stopShopPrice">Loading...</td>
+            </tr>
+            <tr>
+                <td>Walmart</td>
+                <td id="walmartPrice">Loading...</td>
+            </tr>
+            <tr>
+                <td>Whole Foods</td>
+                <td id="wholeFoodsPrice">Loading...</td>
+            </tr>
+        </table>
+        
+        <p>For the most up-to-date prices, check <a href="https://www.ams.usda.gov/mnreports/fvwretail.pdf" target="_blank">USDA Market Reports</a>.</p>
+    </div>
+    
+    <script>
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [
+                    'Jan 2023', 'Feb 2023', 'Mar 2023', 'Apr 2023', 'May 2023', 'Jun 2023', 'Jul 2023', 'Aug 2023', 'Sep 2023', 'Oct 2023', 'Nov 2023', 'Dec 2023',
+                    'Jan 2024', 'Feb 2024', 'Mar 2024', 'Apr 2024', 'May 2024', 'Jun 2024', 'Jul 2024', 'Aug 2024', 'Sep 2024', 'Oct 2024', 'Nov 2024', 'Dec 2024'
+                ],
+                datasets: [{
+                    label: 'Average Price per Pound ($)',
+                    data: [4.80, 4.75, 5.00, 5.10, 5.30, 2.20, 2.40, 2.50, 3.10, 3.40, 3.60, 4.50,
+                           4.85, 4.78, 5.05, 5.12, 5.35, 2.10, 2.35, 2.45, 3.15, 3.42, 3.65, 4.55],
+                    borderColor: '#ffeb3b',
+                    backgroundColor: 'rgba(255, 235, 59, 0.2)',
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#ff6f61'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                }
+            }
+        });
+
+        async function fetchLivePrices() {
+            try {
+                let response = await fetch("http://127.0.0.1:5000/prices");
+                let data = await response.json();
+                document.getElementById('stopShopPrice').textContent = data["Stop & Shop"];
+                document.getElementById('walmartPrice').textContent = data["Walmart"];
+                document.getElementById('wholeFoodsPrice').textContent = data["Whole Foods"];
+            } catch (error) {
+                console.error("Error fetching live prices:", error);
+            }
+        }
+        
+        fetchLivePrices();
+    </script>
+</body>
+</html>
